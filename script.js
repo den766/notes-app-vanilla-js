@@ -5,6 +5,7 @@ const addNoteBtn = document.querySelector("#save-btn");
 const noteslist = document.querySelector("#notes-list");
 
 let notes = [];
+let editingId = null;
 
 const generateId = () =>
   Date.now().toString() + Math.random().toString(36).slice(2);
@@ -76,7 +77,19 @@ const isDuplicate = (title, author) => {
 
 const render = () => {
   noteslist.innerHTML = notes
-    .map(({ id, title, author, body }) => {
+    .map(({ id, title, author, body, createdAt }) => {
+      if (editingId === id) {
+        return `<li class="note-editing">
+        <input class="title-edit-input" value="${title}"/>
+        <input class="author-edit-input" value="${author}" />
+        <textarea class="body-edit-input">${body}</textarea>
+        <button data-action="save" data-id="${id}">Save</button>
+        <button  data-action="cancel">Cancel</button>
+        </li>
+        
+        
+        `;
+      }
       return `<li class="note">
           <div class="note-title">${title}</div>
           <div class="note-author">author :${author}</div>
@@ -85,7 +98,9 @@ const render = () => {
           <div class="note-actions">
             <button class="edit-btn" data-id="${id}">Edit</button>
             <button class="delete-btn" data-id="${id}">Delete</button>
+            
           </div>
+          <div class="createdAt"><p>${createdAt}<p></div>
         </li>`;
     })
     .join("");
@@ -144,6 +159,40 @@ const deleteNote = (curid) => {
   render();
 };
 
+// -----------------------------
+// Edit note
+// -----------------------------
+
+const startEdit = (id) => {
+  editingId = id;
+  render();
+};
+
+const cancelEdit = () => {
+  editingId = null;
+  render();
+};
+
+const saveEdit = (id, title, author, body) => {
+  const editedTitleError = validateTitle(title);
+  if (editedTitleError) return alert(editedTitleError);
+
+  const editedAuthorError = validateAuthor(author);
+  if (editedAuthorError) return alert(editedAuthorError);
+
+  const editedBodyError = validateBody(body);
+  if (editedBodyError) return alert(editedBodyError);
+
+  notes = notes.map((note) =>
+    note.id === id
+      ? { ...note, title: title, author: author, body: body }
+      : note,
+  );
+
+  editingId = null;
+  render();
+};
+
 addNoteBtn.addEventListener("click", createNote);
 
 noteslist.addEventListener("click", (e) => {
@@ -151,5 +200,25 @@ noteslist.addEventListener("click", (e) => {
     const id = e.target.dataset.id;
 
     deleteNote(id);
+  }
+
+  if (e.target.classList.contains("edit-btn")) {
+    const id = e.target.dataset.id;
+
+    startEdit(id);
+  }
+  if (e.target.dataset.action === "cancel") {
+    cancelEdit();
+  }
+
+  if (e.target.dataset.action === "save") {
+    const id = e.target.dataset.id;
+
+    const li = e.target.closest("li");
+
+    const title = li.querySelector(".title-edit-input").value;
+    const author = li.querySelector(".author-edit-input").value;
+    const body = li.querySelector(".body-edit-input").value;
+    saveEdit(id, title, author, body);
   }
 });
