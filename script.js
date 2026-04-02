@@ -181,18 +181,18 @@ const saveEdit = (id, title, author, body) => {
   const cleanAuthor = formatAuthor(sanitize(author));
   const cleanBody = sanitize(body);
 
-  const editedTitleError = validateTitle(title);
+  const editedTitleError = validateTitle(cleanTitle);
   if (editedTitleError) return alert(editedTitleError);
 
-  const editedAuthorError = validateAuthor(author);
+  const editedAuthorError = validateAuthor(cleanAuthor);
   if (editedAuthorError) return alert(editedAuthorError);
 
-  const editedBodyError = validateBody(body);
+  const editedBodyError = validateBody(cleanBody);
   if (editedBodyError) return alert(editedBodyError);
 
   notes = notes.map((note) =>
     note.id === id
-      ? { ...note, title: title, author: author, body: body }
+      ? { ...note, title: cleanTitle, author: cleanAuthor, body: cleanBody }
       : note,
   );
 
