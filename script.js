@@ -72,7 +72,7 @@ const validateBody = (body) => {
 // -----------------------------
 
 const isDuplicate = (title, author) => {
-  return notes.some((note) => note.title === title || note.author === author);
+  return notes.some((note) => note.title === title && note.author === author);
 };
 
 const render = () => {
@@ -100,7 +100,7 @@ const render = () => {
             <button class="delete-btn" data-id="${id}">Delete</button>
             
           </div>
-          <div class="createdAt"><p>${createdAt}<p></div>
+          
         </li>`;
     })
     .join("");
@@ -156,6 +156,9 @@ const createNote = () => {
 
 const deleteNote = (curid) => {
   notes = notes.filter(({ id }) => id !== curid);
+  if (editingId === curid) {
+    editingId = null;
+  }
   render();
 };
 
@@ -174,6 +177,10 @@ const cancelEdit = () => {
 };
 
 const saveEdit = (id, title, author, body) => {
+  const cleanTitle = formatTitle(sanitize(title));
+  const cleanAuthor = formatAuthor(sanitize(author));
+  const cleanBody = sanitize(body);
+
   const editedTitleError = validateTitle(title);
   if (editedTitleError) return alert(editedTitleError);
 
