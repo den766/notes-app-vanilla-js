@@ -135,14 +135,21 @@ const createNote = () => {
   render();
 };
 
+// -----------------------------
+// Delete Note
+// -----------------------------
+
+const deleteNote = (curid) => {
+  notes = notes.filter(({ id }) => id !== curid);
+  render();
+};
+
 addNoteBtn.addEventListener("click", createNote);
 
 noteslist.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete-btn")) {
     const id = e.target.dataset.id;
 
-    console.log("operation commpleted");
-
-    render();
+    deleteNote(id);
   }
 });
