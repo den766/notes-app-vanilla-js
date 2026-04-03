@@ -12,13 +12,17 @@ let searchQuery = "";
 const generateId = () =>
   Date.now().toString() + Math.random().toString(36).slice(2);
 
-const date = new Date();
-
 const formatter = new Intl.DateTimeFormat("en-IN", {
   dateStyle: "short",
   timeStyle: "medium",
   timeZone: "Asia/Kolkata",
 });
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  if (isNaN(date)) return "Unknown date";
+  return formatter.format(date);
+};
 
 // -----------------------------
 // SANITIZE INPUT
@@ -87,13 +91,12 @@ const isDuplicate = (title, author) => {
 
 const render = () => {
   let visibleNotes = notes;
-  
+
   if (searchQuery) {
     visibleNotes = visibleNotes.filter(({ title }) =>
-      title.toLowerCase().includes(searchQuery)
+      title.toLowerCase().includes(searchQuery),
     );
   }
-
 
   noteslist.innerHTML = visibleNotes
     .map(({ id, title, author, body, createdAt }) => {
@@ -119,7 +122,7 @@ const render = () => {
             <button class="delete-btn" data-id="${id}">Delete</button>
             
           </div>
-          <div class="formatDate">${createdAt}</div>
+          <div class="formatDate">${formatDate(createdAt)}</div>
         </li>`;
     })
     .join("");
@@ -155,7 +158,7 @@ const createNote = () => {
     title,
     author,
     body,
-    createdAt: formatter.format(date),
+    createdAt: new Date().toISOString(),
   };
 
   notes = [...notes, note];
@@ -224,8 +227,7 @@ const saveEdit = (id, title, author, body) => {
 // -----------------------------
 
 searchInput.addEventListener("input", (e) => {
-  if (notes.length === 0) return alert("no notes for search , Create a note");
-  searchQuery = e.target.value.toLowerCase();
+  searchQuery = e.target.value.trim().toLowerCase();
   render();
 });
 
