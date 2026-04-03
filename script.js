@@ -3,9 +3,11 @@ const inputBody = document.querySelector("#content");
 const inputAuthor = document.querySelector("#author");
 const addNoteBtn = document.querySelector("#save-btn");
 const noteslist = document.querySelector("#notes-list");
+const searchInput = document.querySelector("#search");
 
 let notes = [];
 let editingId = null;
+let searchQuery = "";
 
 const generateId = () =>
   Date.now().toString() + Math.random().toString(36).slice(2);
@@ -17,7 +19,6 @@ const formatter = new Intl.DateTimeFormat("en-IN", {
   timeStyle: "medium",
   timeZone: "Asia/Kolkata",
 });
-
 
 // -----------------------------
 // SANITIZE INPUT
@@ -85,7 +86,16 @@ const isDuplicate = (title, author) => {
 };
 
 const render = () => {
-  noteslist.innerHTML = notes
+  let visibleNotes = notes;
+  
+  if (searchQuery) {
+    visibleNotes = visibleNotes.filter(({ title }) =>
+      title.toLowerCase().includes(searchQuery)
+    );
+  }
+
+
+  noteslist.innerHTML = visibleNotes
     .map(({ id, title, author, body, createdAt }) => {
       if (editingId === id) {
         return `<li class="note-editing">
@@ -209,6 +219,16 @@ const saveEdit = (id, title, author, body) => {
   render();
 };
 
+// -----------------------------
+// Search Notes
+// -----------------------------
+
+searchInput.addEventListener("input", (e) => {
+  if (notes.length === 0) return alert("no notes for search , Create a note");
+  searchQuery = e.target.value.toLowerCase();
+  render();
+});
+
 addNoteBtn.addEventListener("click", createNote);
 
 noteslist.addEventListener("click", (e) => {
@@ -238,7 +258,3 @@ noteslist.addEventListener("click", (e) => {
     saveEdit(id, title, author, body);
   }
 });
-
-
-
-
