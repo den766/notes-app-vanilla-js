@@ -12,6 +12,26 @@ let searchQuery = "";
 const generateId = () =>
   Date.now().toString() + Math.random().toString(36).slice(2);
 
+// -----------------------------
+// Local Storage
+// -----------------------------
+
+const saveNotes = (notes) => {
+  const ConvertedNotes = JSON.stringify(notes);
+  localStorage.setItem("notes", ConvertedNotes);
+};
+
+const loadNotes = () => {
+  const saved = localStorage.getItem("notes");
+  if (saved) {
+    notes = JSON.parse(saved);
+  }
+};
+
+// -----------------------------
+// Date Formatter
+// -----------------------------
+
 const formatter = new Intl.DateTimeFormat("en-IN", {
   dateStyle: "short",
   timeStyle: "medium",
@@ -163,6 +183,8 @@ const createNote = () => {
 
   notes = [...notes, note];
 
+  saveNotes(notes);
+
   console.log(notes);
 
   inputTitle.value = "";
@@ -181,6 +203,7 @@ const deleteNote = (curid) => {
   if (editingId === curid) {
     editingId = null;
   }
+  saveNotes(notes);
   render();
 };
 
@@ -219,6 +242,7 @@ const saveEdit = (id, title, author, body) => {
   );
 
   editingId = null;
+  saveNotes(notes);
   render();
 };
 
@@ -232,6 +256,10 @@ searchInput.addEventListener("input", (e) => {
 });
 
 addNoteBtn.addEventListener("click", createNote);
+
+// -----------------------------
+// Event Delegation
+// -----------------------------
 
 noteslist.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete-btn")) {
@@ -260,3 +288,8 @@ noteslist.addEventListener("click", (e) => {
     saveEdit(id, title, author, body);
   }
 });
+
+console.log("Hello");
+
+loadNotes();
+render();
