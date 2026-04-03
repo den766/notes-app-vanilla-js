@@ -10,6 +10,15 @@ let editingId = null;
 const generateId = () =>
   Date.now().toString() + Math.random().toString(36).slice(2);
 
+const date = new Date();
+
+const formatter = new Intl.DateTimeFormat("en-IN", {
+  dateStyle: "short",
+  timeStyle: "medium",
+  timeZone: "Asia/Kolkata",
+});
+
+
 // -----------------------------
 // SANITIZE INPUT
 // -----------------------------
@@ -100,7 +109,7 @@ const render = () => {
             <button class="delete-btn" data-id="${id}">Delete</button>
             
           </div>
-          
+          <div class="formatDate">${createdAt}</div>
         </li>`;
     })
     .join("");
@@ -136,7 +145,7 @@ const createNote = () => {
     title,
     author,
     body,
-    createdAt: new Date().toISOString(),
+    createdAt: formatter.format(date),
   };
 
   notes = [...notes, note];
@@ -229,3 +238,7 @@ noteslist.addEventListener("click", (e) => {
     saveEdit(id, title, author, body);
   }
 });
+
+
+
+
