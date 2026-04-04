@@ -111,7 +111,6 @@ const isDuplicate = (title, author) => {
 
 const render = () => {
   let visibleNotes = notes;
-
   visibleNotes.sort((a, b) => b.pinned - a.pinned);
 
   if (searchQuery) {
@@ -271,6 +270,11 @@ searchInput.addEventListener("input", (e) => {
 // -----------------------------
 
 const pinNote = (pinId) => {
+  let pinnedCount = notes.filter((note) => note.pinned).length;
+  if (pinnedCount >= 2) {
+    alert("You can only pin upto 2 notes");
+    return;
+  }
   notes = notes.map((note) =>
     note.id === pinId ? { ...note, pinned: true } : note,
   );
