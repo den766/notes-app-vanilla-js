@@ -106,6 +106,10 @@ button {
   border-radius: 8px;
 }
 
+.pinned{
+  border-left:4px solid gold;
+}
+
 [data-action="save"] {
   background: #2ecc71;
 }

@@ -112,14 +112,19 @@ const isDuplicate = (title, author) => {
 const render = () => {
   let visibleNotes = notes;
 
+  visibleNotes.sort((a, b) => b.pinned - a.pinned);
+
   if (searchQuery) {
-    visibleNotes = visibleNotes.filter(({ title }) =>
-      title.toLowerCase().includes(searchQuery),
+    visibleNotes = visibleNotes.filter(
+      ({ title, author, body }) =>
+        title.toLowerCase().includes(searchQuery) ||
+        author.toLowerCase().includes(searchQuery) ||
+        body.toLowerCase().includes(searchQuery),
     );
   }
 
   noteslist.innerHTML = visibleNotes
-    .map(({ id, title, author, body, createdAt }) => {
+    .map(({ id, title, author, body, createdAt, pinned }) => {
       if (editingId === id) {
         return `<li class="note-editing">
         <input class="title-edit-input" value="${title}"/>
@@ -132,7 +137,7 @@ const render = () => {
         
         `;
       }
-      return `<li class="note">
+      return `<li class="note ${pinned ? "pinned" : ""}">
           <div class="note-title">${title}</div>
           <div class="note-author">author :${author}</div>
           <div>${body}</div>
@@ -140,6 +145,11 @@ const render = () => {
           <div class="note-actions">
             <button class="edit-btn" data-id="${id}">Edit</button>
             <button class="delete-btn" data-id="${id}">Delete</button>
+            ${
+              pinned
+                ? `<button class="unpin-btn" data-id="${id}">Unpin</button>`
+                : `<button class="pin-btn" data-id="${id}">Pin</button>`
+            }
             
           </div>
           <div class="formatDate">${formatDate(createdAt)}</div>
@@ -179,6 +189,7 @@ const createNote = () => {
     author,
     body,
     createdAt: new Date().toISOString(),
+    pinned: false,
   };
 
   notes = [...notes, note];
@@ -255,6 +266,27 @@ searchInput.addEventListener("input", (e) => {
   render();
 });
 
+// -----------------------------
+// Pin & unPin Notes
+// -----------------------------
+
+const pinNote = (pinId) => {
+  notes = notes.map((note) =>
+    note.id === pinId ? { ...note, pinned: true } : note,
+  );
+  saveNotes(notes);
+  render();
+};
+
+const unpinNote = (pinId) => {
+  notes = notes.map((note) =>
+    note.id === pinId ? { ...note, pinned: false } : note,
+  );
+
+  saveNotes(notes);
+  render();
+};
+
 addNoteBtn.addEventListener("click", createNote);
 
 // -----------------------------
@@ -287,9 +319,17 @@ noteslist.addEventListener("click", (e) => {
     const body = li.querySelector(".body-edit-input").value;
     saveEdit(id, title, author, body);
   }
-});
 
-console.log("Hello");
+  if (e.target.classList.contains("pin-btn")) {
+    const id = e.target.dataset.id;
+    pinNote(id);
+  }
+
+  if (e.target.classList.contains("unpin-btn")) {
+    const id = e.target.dataset.id;
+    unpinNote(id);
+  }
+});
 
 loadNotes();
 render();
