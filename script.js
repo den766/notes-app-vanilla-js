@@ -162,7 +162,7 @@ const render = () => {
       }
       return `<li class="note ${pinned ? "pinned" : ""}">
           <div class="note-title">${title}</div>
-          <div class="note-author">author :${author}</div>
+          <div class="note-author">${author}</div>
           <div>${body}</div>
 
           <div class="note-actions">
