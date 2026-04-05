@@ -4,6 +4,7 @@ const inputAuthor = document.querySelector("#author");
 const addNoteBtn = document.querySelector("#save-btn");
 const noteslist = document.querySelector("#notes-list");
 const searchInput = document.querySelector("#search");
+const errorBox = document.querySelector("#error-message");
 
 let notes = [];
 let editingId = null;
@@ -42,6 +43,14 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   if (isNaN(date)) return "Unknown date";
   return formatter.format(date);
+};
+
+const showError = (message) => {
+  errorBox.textContent = message;
+};
+
+const cancelError = () => {
+  errorBox.textContent = "";
 };
 
 // -----------------------------
@@ -171,16 +180,27 @@ const createNote = () => {
   const body = sanitize(rawBody);
 
   if (isDuplicate(title, author))
-    return alert("Note already exists for this author");
+    return showError("Note already exists for this author");
 
   const titleError = validateTitle(title);
-  if (titleError) return alert(titleError);
+  if (titleError) {
+    showError(titleError);
+    return;
+  }
 
   const authorError = validateAuthor(author);
-  if (authorError) return alert(authorError);
+  if (authorError) {
+    showError(authorError);
+    return;
+  }
 
   const bodyError = validateBody(body);
-  if (bodyError) return alert(bodyError);
+  if (bodyError) {
+    showError(bodyError);
+    return;
+  }
+
+  cancelError();
 
   const note = {
     id: generateId(),
@@ -237,13 +257,24 @@ const saveEdit = (id, title, author, body) => {
   const cleanBody = sanitize(body);
 
   const editedTitleError = validateTitle(cleanTitle);
-  if (editedTitleError) return alert(editedTitleError);
+  if (editedTitleError) {
+    showError(editedTitleError);
+    return;
+  }
 
   const editedAuthorError = validateAuthor(cleanAuthor);
-  if (editedAuthorError) return alert(editedAuthorError);
+  if (editedAuthorError) {
+    showError(editedAuthorError);
+    return;
+  }
 
   const editedBodyError = validateBody(cleanBody);
-  if (editedBodyError) return alert(editedBodyError);
+  if (editedBodyError) {
+    showError(editedBodyError);
+    return;
+  }
+
+  cancelError();
 
   notes = notes.map((note) =>
     note.id === id
@@ -272,9 +303,12 @@ searchInput.addEventListener("input", (e) => {
 const pinNote = (pinId) => {
   let pinnedCount = notes.filter((note) => note.pinned).length;
   if (pinnedCount >= 2) {
-    alert("You can only pin upto 2 notes");
+    showError("You can only pin upto 2 notes");
     return;
   }
+
+  cancelError();
+
   notes = notes.map((note) =>
     note.id === pinId ? { ...note, pinned: true } : note,
   );

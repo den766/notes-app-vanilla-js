@@ -23,6 +23,7 @@ h1 {
 input {
   padding: 10px;
   flex: 1;
+  width: 100%;
 }
 
 textarea {
@@ -70,12 +71,9 @@ button {
   gap: 8px;
 }
 
-.formatDate{
-
-   margin-top: 10px;
+.formatDate {
+  margin-top: 10px;
 }
-
-
 
 /* edit mode */
 
@@ -106,8 +104,8 @@ button {
   border-radius: 8px;
 }
 
-.pinned{
-  border-left:4px solid gold;
+.pinned {
+  border-left: 4px solid gold;
 }
 
 [data-action="save"] {
@@ -121,4 +119,13 @@ button[data-action="cancel"] {
 }
 button[data-action="cancel"]:hover {
   background: #c0392b;
+}
+
+#error-message {
+  color: #b00020;
+  /* background: #ffe6; */
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
