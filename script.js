@@ -131,6 +131,21 @@ const render = () => {
     );
   }
 
+  if (visibleNotes.length === 0) {
+    noteslist.innerHTML = `
+    <div class="empty-message">
+      <div class="empty-icon">📝</div>
+      <h3>${searchQuery ? "No results found" : "No notes yet"}</h3>
+      <p>${
+        searchQuery
+          ? "Try a different keyword."
+          : "Create your first note to get started."
+      }</p>
+    </div>
+  `;
+    return;
+  }
+
   noteslist.innerHTML = visibleNotes
     .map(({ id, title, author, body, createdAt, pinned }) => {
       if (editingId === id) {
